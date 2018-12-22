@@ -54,6 +54,9 @@ func main() {
 		"bpo#": "https://gitlab.com/postmarketOS/build.postmarketos.org/issues/",
 		"bpo!": "https://gitlab.com/postmarketOS/build.postmarketos.org/merge_requests/",
 
+		"bot#": "https://gitlab.com/postmarketOS/matrix-bot/issues/",
+		"bot!": "https://gitlab.com/postmarketOS/matrix-bot/merge_requests/",
+
 		"chrg!": "https://gitlab.com/postmarketOS/charging-sdl/issues/",
 		"chrg#": "https://gitlab.com/postmarketOS/charging-sdl/merge_requests/",
 
@@ -75,9 +78,9 @@ func main() {
 		"org#": "https://gitlab.com/postmarketOS/postmarketos.org/issues/",
 		"org!": "https://gitlab.com/postmarketOS/postmarketos.org/merge_requests/",
 
-		"wiki#": "https://gitlab.com/postmarketOS/wiki/merge_requests/",
+		"wiki#": "https://gitlab.com/postmarketOS/wiki/issues/",
 	}
-	shortcutmapregex := regexp.MustCompile("(?i)(pma[#!]|pmb[#!]|org[#!])(\\d+)")
+	shortcutmapregex := regexp.MustCompile("(?i)(art[#!]|bpo[#!]|bot[#!]|chrg[#!]|lnx[#!]|mrh[#!]|osk[#!]|pma[#!]|pmb[#!]|org[#!]|wiki#)(\\d+)")
 
 	syncer := client.Syncer.(*mautrix.DefaultSyncer)
 	syncer.OnEventType(mautrix.EventMessage, func(evt *mautrix.Event) {
@@ -85,6 +88,7 @@ func main() {
 			(evt.RoomID == "!clcCCNrLZYwdfNqkkR:disroot.org" || // #postmarketos:disroot.org
 				evt.RoomID == "!MxNOnZlZaurAGfcxFy:matrix.org" || // #postmarketos-lowlevel:disroot.org
 				evt.RoomID == "!VTQfOrQIBniIdCuMOq:matrix.org" || // #postmarketos-offtopic:disroot.org
+				evt.RoomID == "!FrvxNMhUfjlwTyyZHQ:disroot.org" || // #postmarketos-events:disroot.org
 				evt.RoomID == "!NBvxopLbDoLCDlqKkL:z3ntu.xyz") { // #test2:z3ntu.xyz
 			matches := shortcutmapregex.FindAllStringSubmatch(evt.Content.Body, -1)
 			if matches != nil {
