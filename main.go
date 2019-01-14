@@ -82,6 +82,8 @@ func main() {
 	}
 	shortcutmapregex := regexp.MustCompile("(?i)(art[#!]|bpo[#!]|bot[#!]|chrg[#!]|lnx[#!]|mrh[#!]|osk[#!]|pma[#!]|pmb[#!]|org[#!]|wiki#)(\\d+)")
 
+	removequoteregex := regexp.MustCompile("<mx-reply>.*</mx-reply>")
+
 	syncer := client.Syncer.(*mautrix.DefaultSyncer)
 	syncer.OnEventType(mautrix.EventMessage, func(evt *mautrix.Event) {
 		if evt.Sender != *username &&
@@ -90,12 +92,20 @@ func main() {
 				evt.RoomID == "!VTQfOrQIBniIdCuMOq:matrix.org" || // #postmarketos-offtopic:disroot.org
 				evt.RoomID == "!FrvxNMhUfjlwTyyZHQ:disroot.org" || // #postmarketos-events:disroot.org
 				evt.RoomID == "!NBvxopLbDoLCDlqKkL:z3ntu.xyz") { // #test2:z3ntu.xyz
-			matches := shortcutmapregex.FindAllStringSubmatch(evt.Content.Body, -1)
+			var body string
+			// Use FormattedBody is available, as it will contain quote information that we want to remove
+			if len(evt.Content.FormattedBody) != 0 {
+				body = evt.Content.FormattedBody
+				body = removequoteregex.ReplaceAllString(body, "")
+			} else {
+				body = evt.Content.Body
+			}
+			matches := shortcutmapregex.FindAllStringSubmatch(body, -1)
 			if matches != nil {
 				var buffer bytes.Buffer
 				for _, match := range matches {
 					fmt.Println(match[1] + match[2] + " matched!")
-					fmt.Printf("<%[1]s> %[4]s (%[2]s/%[3]s)\n", evt.Sender, evt.Type.String(), evt.ID, evt.Content.Body)
+					fmt.Printf("<%[1]s> %[4]s (%[2]s/%[3]s)\n", evt.Sender, evt.Type.String(), evt.ID, body)
 					buffer.WriteString(shortcutmap[strings.ToLower(match[1])] + match[2] + " ")
 				}
 				content := mautrix.Content{MsgType: mautrix.MsgText, Body: strings.TrimSuffix(buffer.String(), " ")}
