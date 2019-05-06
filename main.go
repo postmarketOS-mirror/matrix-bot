@@ -86,12 +86,7 @@ func main() {
 
 	syncer := client.Syncer.(*mautrix.DefaultSyncer)
 	syncer.OnEventType(mautrix.EventMessage, func(evt *mautrix.Event) {
-		if evt.Sender != *username &&
-			(evt.RoomID == "!clcCCNrLZYwdfNqkkR:disroot.org" || // #postmarketos:disroot.org
-				evt.RoomID == "!MxNOnZlZaurAGfcxFy:matrix.org" || // #postmarketos-lowlevel:disroot.org
-				evt.RoomID == "!VTQfOrQIBniIdCuMOq:matrix.org" || // #postmarketos-offtopic:disroot.org
-				evt.RoomID == "!FrvxNMhUfjlwTyyZHQ:disroot.org" || // #postmarketos-events:disroot.org
-				evt.RoomID == "!NBvxopLbDoLCDlqKkL:z3ntu.xyz") { // #test2:z3ntu.xyz
+		if evt.Sender != *username {
 			var body string
 			// Use FormattedBody is available, as it will contain quote information that we want to remove
 			if len(evt.Content.FormattedBody) != 0 {
