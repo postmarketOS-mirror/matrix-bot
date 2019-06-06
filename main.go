@@ -1,6 +1,6 @@
 // pmos-bot - A bot for the postmarketOS Matrix channels
 // Copyright (C) 2017 Tulir Asokan
-// Copyright (C) 2018 Luca Weiss
+// Copyright (C) 2018-2019 Luca Weiss
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -57,17 +57,17 @@ func main() {
 		"bot#": "https://gitlab.com/postmarketOS/matrix-bot/issues/",
 		"bot!": "https://gitlab.com/postmarketOS/matrix-bot/merge_requests/",
 
-		"chrg!": "https://gitlab.com/postmarketOS/charging-sdl/issues/",
-		"chrg#": "https://gitlab.com/postmarketOS/charging-sdl/merge_requests/",
+		"chrg#": "https://gitlab.com/postmarketOS/charging-sdl/issues/",
+		"chrg!": "https://gitlab.com/postmarketOS/charging-sdl/merge_requests/",
 
-		"lnx!": "https://gitlab.com/postmarketOS/linux-postmarketos/issues/",
-		"lnx#": "https://gitlab.com/postmarketOS/linux-postmarketos/merge_requests/",
+		"lnx#": "https://gitlab.com/postmarketOS/linux-postmarketos/issues/",
+		"lnx!": "https://gitlab.com/postmarketOS/linux-postmarketos/merge_requests/",
 
-		"mrh!": "https://gitlab.com/postmarketOS/mrhlpr/issues/",
-		"mrh#": "https://gitlab.com/postmarketOS/mrhlpr/merge_requests/",
+		"mrh#": "https://gitlab.com/postmarketOS/mrhlpr/issues/",
+		"mrh!": "https://gitlab.com/postmarketOS/mrhlpr/merge_requests/",
 
-		"osk!": "https://gitlab.com/postmarketOS/osk-sdl/issues/",
-		"osk#": "https://gitlab.com/postmarketOS/osk-sdl/merge_requests/",
+		"osk#": "https://gitlab.com/postmarketOS/osk-sdl/issues/",
+		"osk!": "https://gitlab.com/postmarketOS/osk-sdl/merge_requests/",
 
 		"pma#": "https://gitlab.com/postmarketOS/pmaports/issues/",
 		"pma!": "https://gitlab.com/postmarketOS/pmaports/merge_requests/",
