@@ -22,6 +22,7 @@ import (
 	"flag"
 	"fmt"
 	"maunium.net/go/mautrix"
+	"os"
 	"regexp"
 	"strings"
 )
@@ -35,13 +36,13 @@ func main() {
 	fmt.Println("Logging to", *homeserver, "as", *username)
 	client, err := mautrix.NewClient(*homeserver, "", "")
 	if err != nil {
-		fmt.Println(err)
-		return
+		_, _ = fmt.Fprintf(os.Stderr, "%s\n", err)
+		os.Exit(1)
 	}
 	resp, err := client.Login(&mautrix.ReqLogin{Type: "m.login.password", User: *username, Password: *password})
 	if err != nil {
-		fmt.Println(err)
-		return
+		_, _ = fmt.Fprintf(os.Stderr, "%s\n", err)
+		os.Exit(1)
 	}
 	client.SetCredentials(resp.UserID, resp.AccessToken)
 
