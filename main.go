@@ -33,6 +33,11 @@ var password = flag.String("password", "", "Matrix password")
 
 func main() {
 	flag.Parse()
+	if *username == "" || *password == "" {
+		_, _ = fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
+		flag.PrintDefaults()
+		os.Exit(1)
+	}
 	fmt.Println("Logging to", *homeserver, "as", *username)
 	client, err := mautrix.NewClient(*homeserver, "", "")
 	if err != nil {
