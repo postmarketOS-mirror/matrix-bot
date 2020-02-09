@@ -30,6 +30,7 @@ import (
 var homeserver = flag.String("homeserver", "https://matrix.org", "Matrix homeserver")
 var username = flag.String("username", "", "Matrix username localpart")
 var password = flag.String("password", "", "Matrix password")
+var deviceId = flag.String("deviceid", "", "Matrix device id (optional)")
 
 func main() {
 	flag.Parse()
@@ -48,6 +49,7 @@ func main() {
 		Type:       "m.login.password",
 		Identifier: mautrix.UserIdentifier{Type: "m.id.user", User: *username},
 		Password:   *password,
+		DeviceID:   *deviceId,
 	})
 	if err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "%s\n", err)
