@@ -44,7 +44,11 @@ func main() {
 		_, _ = fmt.Fprintf(os.Stderr, "%s\n", err)
 		os.Exit(1)
 	}
-	resp, err := client.Login(&mautrix.ReqLogin{Type: "m.login.password", User: *username, Password: *password})
+	resp, err := client.Login(&mautrix.ReqLogin{
+		Type:       "m.login.password",
+		Identifier: mautrix.UserIdentifier{Type: "m.id.user", User: *username},
+		Password:   *password,
+	})
 	if err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "%s\n", err)
 		os.Exit(1)
