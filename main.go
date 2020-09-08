@@ -22,6 +22,8 @@ import (
 	"flag"
 	"fmt"
 	"maunium.net/go/mautrix"
+	"maunium.net/go/mautrix/event"
+	"maunium.net/go/mautrix/id"
 	"os"
 	"regexp"
 	"strings"
@@ -49,7 +51,7 @@ func main() {
 		Type:       "m.login.password",
 		Identifier: mautrix.UserIdentifier{Type: "m.id.user", User: *username},
 		Password:   *password,
-		DeviceID:   *deviceId,
+		DeviceID:   id.DeviceID(*deviceId),
 	})
 	if err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "%s\n", err)
@@ -92,20 +94,26 @@ func main() {
 
 		"wiki#": "https://gitlab.com/postmarketOS/wiki/issues/",
 	}
+
 	shortcutmapregex := regexp.MustCompile("(?i)(art[#!]|bpo[#!]|bot[#!]|chrg[#!]|lnx[#!]|mrh[#!]|osk[#!]|pma[#!]|pmb[#!]|org[#!]|wiki#)(\\d+)")
 
 	removequoteregex := regexp.MustCompile("<mx-reply>.*</mx-reply>")
 
 	syncer := client.Syncer.(*mautrix.DefaultSyncer)
-	syncer.OnEventType(mautrix.EventMessage, func(evt *mautrix.Event) {
-		if evt.Sender != *username {
+	syncer.OnEventType(event.EventMessage, func(source mautrix.EventSource, evt *event.Event) {
+		senderName, _, err := evt.Sender.Parse()
+		if err != nil {
+			_, _ = fmt.Fprintf(os.Stderr, "%s\n", err)
+			return
+		}
+		if senderName != *username {
 			var body string
 			// Use FormattedBody is available, as it will contain quote information that we want to remove
-			if len(evt.Content.FormattedBody) != 0 {
-				body = evt.Content.FormattedBody
+			if len(evt.Content.AsMessage().FormattedBody) != 0 {
+				body = evt.Content.AsMessage().FormattedBody
 				body = removequoteregex.ReplaceAllString(body, "")
 			} else {
-				body = evt.Content.Body
+				body = evt.Content.AsMessage().Body
 			}
 			matches := shortcutmapregex.FindAllStringSubmatch(body, -1)
 			if matches != nil {
@@ -115,8 +123,8 @@ func main() {
 					fmt.Printf("<%[1]s> %[4]s (%[2]s/%[3]s)\n", evt.Sender, evt.Type.String(), evt.ID, body)
 					buffer.WriteString(shortcutmap[strings.ToLower(match[1])] + match[2] + " ")
 				}
-				content := mautrix.Content{MsgType: mautrix.MsgText, Body: strings.TrimSuffix(buffer.String(), " ")}
-				_, err := client.SendMessageEvent(evt.RoomID, mautrix.EventMessage, content)
+				content := event.MessageEventContent{MsgType: event.MsgText, Body: strings.TrimSuffix(buffer.String(), " ")}
+				_, err := client.SendMessageEvent(evt.RoomID, event.EventMessage, content)
 				if err != nil {
 					fmt.Println(err)
 				}
