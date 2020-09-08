@@ -33,12 +33,13 @@ var homeserver = flag.String("homeserver", "https://matrix.org", "Matrix homeser
 var username = flag.String("username", "", "Matrix username localpart")
 var password = flag.String("password", "", "Matrix password")
 var deviceId = flag.String("deviceid", "", "Matrix device id (optional)")
+var diskStorePath = flag.String("stateStoragePath", "", "Path to a .json file where state information is stored")
 
 var shortcutMapRegex = buildShortcutMapRegex()
 
 func main() {
 	flag.Parse()
-	if *username == "" || *password == "" {
+	if *username == "" || *password == "" || *diskStorePath == "" {
 		_, _ = fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
 		flag.PrintDefaults()
 		os.Exit(1)
@@ -49,6 +50,11 @@ func main() {
 		_, _ = fmt.Fprintf(os.Stderr, "%s\n", err)
 		os.Exit(1)
 	}
+
+	diskStore := NewDiskStore(*diskStorePath)
+	diskStore.Load()
+	client.Store = diskStore
+
 	_, err = client.Login(&mautrix.ReqLogin{
 		Type:             "m.login.password",
 		Identifier:       mautrix.UserIdentifier{Type: "m.id.user", User: *username},
@@ -109,7 +115,7 @@ func handleEvent(evt *event.Event) (*event.MessageEventContent, error) {
 		if matches != nil {
 			var buffer bytes.Buffer
 			for _, match := range matches {
-				fmt.Println(match[1] + match[2] + " matched!")
+				//fmt.Println(match[1] + match[2] + " matched!")
 				fmt.Printf("<%[1]s> %[4]s (%[2]s/%[3]s)\n", evt.Sender, evt.Type.String(), evt.ID, body)
 				buffer.WriteString(shortcutMap[strings.ToLower(match[1])] + match[2] + " ")
 			}
