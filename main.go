@@ -49,17 +49,17 @@ func main() {
 		_, _ = fmt.Fprintf(os.Stderr, "%s\n", err)
 		os.Exit(1)
 	}
-	resp, err := client.Login(&mautrix.ReqLogin{
-		Type:       "m.login.password",
-		Identifier: mautrix.UserIdentifier{Type: "m.id.user", User: *username},
-		Password:   *password,
-		DeviceID:   id.DeviceID(*deviceId),
+	_, err = client.Login(&mautrix.ReqLogin{
+		Type:             "m.login.password",
+		Identifier:       mautrix.UserIdentifier{Type: "m.id.user", User: *username},
+		Password:         *password,
+		DeviceID:         id.DeviceID(*deviceId),
+		StoreCredentials: true,
 	})
 	if err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "%s\n", err)
 		os.Exit(1)
 	}
-	client.SetCredentials(resp.UserID, resp.AccessToken)
 
 	fmt.Println("Login successful")
 
