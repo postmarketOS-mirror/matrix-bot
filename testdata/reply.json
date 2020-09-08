@@ -1,0 +1,22 @@
+{
+  "type": "m.room.message",
+  "sender": "@luca:z3ntu.xyz",
+  "content": {
+    "msgtype": "m.text",
+    "body": "> <@luca:z3ntu.xyz> Here's a good first issue: pma#123\n\nGreat find!",
+    "format": "org.matrix.custom.html",
+    "formatted_body": "<mx-reply><blockquote><a href=\"https://matrix.to/#/!ulfjmgXXvDKGidRUPf:z3ntu.xyz/$qMmuhifDClNU0A_dPpWdDybN_0HOJUtOU4EYOEzoK0U?via=z3ntu.xyz&via=matrix.org&via=t2bot.io\">In reply to</a> <a href=\"https://matrix.to/#/@luca:z3ntu.xyz\">@luca:z3ntu.xyz</a><br>Here&#39;s a good first issue: pma#123</blockquote></mx-reply>Great find!",
+    "m.relates_to": {
+      "m.in_reply_to": {
+        "event_id": "$qMmuhifDClNU0A_dPpWdDybN_0HOJUtOU4EYOEzoK0U"
+      }
+    }
+  },
+  "origin_server_ts": 1599580866354,
+  "unsigned": {
+    "age": 58,
+    "transaction_id": "m1599580866124.88"
+  },
+  "event_id": "$gkuvl_vStdMT9T6UOfs45O3uEshygF13KgAqlwU5sHo",
+  "room_id": "!ulfjmgXXvDKGidRUPf:z3ntu.xyz"
+}

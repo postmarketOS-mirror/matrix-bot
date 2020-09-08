@@ -1,0 +1,15 @@
+{
+  "type": "m.room.message",
+  "sender": "@luca:z3ntu.xyz",
+  "content": {
+    "msgtype": "m.text",
+    "body": "Please review pmb!456"
+  },
+  "origin_server_ts": 1599583786522,
+  "unsigned": {
+    "age": 105,
+    "transaction_id": "m1599583786359.89"
+  },
+  "event_id": "$zaUpeib8zTYM32lOu6N3jtzAsrhoRO7rnpVzNn39npg",
+  "room_id": "!ulfjmgXXvDKGidRUPf:z3ntu.xyz"
+}

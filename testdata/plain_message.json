@@ -1,0 +1,15 @@
+{
+  "type": "m.room.message",
+  "sender": "@luca:z3ntu.xyz",
+  "content": {
+    "msgtype": "m.text",
+    "body": "Hello World!"
+  },
+  "origin_server_ts": 1599577779469,
+  "unsigned": {
+    "age": 62,
+    "transaction_id": "m1599577778871.83"
+  },
+  "event_id": "$P3FC5IcUi9TvbHEy32081SzVN-JqRZroqEJt8Jf-Ia4",
+  "room_id": "!ulfjmgXXvDKGidRUPf:z3ntu.xyz"
+}

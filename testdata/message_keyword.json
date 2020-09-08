@@ -1,0 +1,15 @@
+{
+  "type": "m.room.message",
+  "sender": "@luca:z3ntu.xyz",
+  "content": {
+    "msgtype": "m.text",
+    "body": "Here's a good first issue: pma#123"
+  },
+  "origin_server_ts": 1599580829946,
+  "unsigned": {
+    "age": 50,
+    "transaction_id": "m1599580829765.87"
+  },
+  "event_id": "$qMmuhifDClNU0A_dPpWdDybN_0HOJUtOU4EYOEzoK0U",
+  "room_id": "!ulfjmgXXvDKGidRUPf:z3ntu.xyz"
+}

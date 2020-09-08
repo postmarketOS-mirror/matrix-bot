@@ -34,6 +34,8 @@ var username = flag.String("username", "", "Matrix username localpart")
 var password = flag.String("password", "", "Matrix password")
 var deviceId = flag.String("deviceid", "", "Matrix device id (optional)")
 
+var shortcutMapRegex = buildShortcutMapRegex()
+
 func main() {
 	flag.Parse()
 	if *username == "" || *password == "" {
@@ -61,74 +63,23 @@ func main() {
 
 	fmt.Println("Login successful")
 
-	shortcutmap := map[string]string{
-		"art#": "https://gitlab.com/postmarketOS/artwork/issues/",
-		"art!": "https://gitlab.com/postmarketOS/artwork/merge_requests/",
-
-		"bpo#": "https://gitlab.com/postmarketOS/build.postmarketos.org/issues/",
-		"bpo!": "https://gitlab.com/postmarketOS/build.postmarketos.org/merge_requests/",
-
-		"bot#": "https://gitlab.com/postmarketOS/matrix-bot/issues/",
-		"bot!": "https://gitlab.com/postmarketOS/matrix-bot/merge_requests/",
-
-		"chrg#": "https://gitlab.com/postmarketOS/charging-sdl/issues/",
-		"chrg!": "https://gitlab.com/postmarketOS/charging-sdl/merge_requests/",
-
-		"lnx#": "https://gitlab.com/postmarketOS/linux-postmarketos/issues/",
-		"lnx!": "https://gitlab.com/postmarketOS/linux-postmarketos/merge_requests/",
-
-		"mrh#": "https://gitlab.com/postmarketOS/mrhlpr/issues/",
-		"mrh!": "https://gitlab.com/postmarketOS/mrhlpr/merge_requests/",
-
-		"osk#": "https://gitlab.com/postmarketOS/osk-sdl/issues/",
-		"osk!": "https://gitlab.com/postmarketOS/osk-sdl/merge_requests/",
-
-		"pma#": "https://gitlab.com/postmarketOS/pmaports/issues/",
-		"pma!": "https://gitlab.com/postmarketOS/pmaports/merge_requests/",
-
-		"pmb#": "https://gitlab.com/postmarketOS/pmbootstrap/issues/",
-		"pmb!": "https://gitlab.com/postmarketOS/pmbootstrap/merge_requests/",
-
-		"org#": "https://gitlab.com/postmarketOS/postmarketos.org/issues/",
-		"org!": "https://gitlab.com/postmarketOS/postmarketos.org/merge_requests/",
-
-		"wiki#": "https://gitlab.com/postmarketOS/wiki/issues/",
-	}
-
-	shortcutmapregex := regexp.MustCompile("(?i)(art[#!]|bpo[#!]|bot[#!]|chrg[#!]|lnx[#!]|mrh[#!]|osk[#!]|pma[#!]|pmb[#!]|org[#!]|wiki#)(\\d+)")
-
-	removequoteregex := regexp.MustCompile("<mx-reply>.*</mx-reply>")
-
 	syncer := client.Syncer.(*mautrix.DefaultSyncer)
 	syncer.OnEventType(event.EventMessage, func(source mautrix.EventSource, evt *event.Event) {
-		senderName, _, err := evt.Sender.Parse()
+		content, err := handleEvent(evt)
 		if err != nil {
-			_, _ = fmt.Fprintf(os.Stderr, "%s\n", err)
+			fmt.Println(err)
 			return
 		}
-		if senderName != *username {
-			var body string
-			// Use FormattedBody is available, as it will contain quote information that we want to remove
-			if len(evt.Content.AsMessage().FormattedBody) != 0 {
-				body = evt.Content.AsMessage().FormattedBody
-				body = removequoteregex.ReplaceAllString(body, "")
-			} else {
-				body = evt.Content.AsMessage().Body
-			}
-			matches := shortcutmapregex.FindAllStringSubmatch(body, -1)
-			if matches != nil {
-				var buffer bytes.Buffer
-				for _, match := range matches {
-					fmt.Println(match[1] + match[2] + " matched!")
-					fmt.Printf("<%[1]s> %[4]s (%[2]s/%[3]s)\n", evt.Sender, evt.Type.String(), evt.ID, body)
-					buffer.WriteString(shortcutmap[strings.ToLower(match[1])] + match[2] + " ")
-				}
-				content := event.MessageEventContent{MsgType: event.MsgText, Body: strings.TrimSuffix(buffer.String(), " ")}
-				_, err := client.SendMessageEvent(evt.RoomID, event.EventMessage, content)
-				if err != nil {
-					fmt.Println(err)
-				}
-			}
+
+		// No content - nothing to do
+		if content == nil {
+			return
+		}
+
+		_, err = client.SendMessageEvent(evt.RoomID, event.EventMessage, content)
+		if err != nil {
+			fmt.Println(err)
+			return
 		}
 	})
 
@@ -136,4 +87,46 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
+}
+
+func handleEvent(evt *event.Event) (*event.MessageEventContent, error) {
+	senderName, _, err := evt.Sender.Parse()
+	if err != nil {
+		return nil, err
+	}
+	if senderName != *username {
+		var body string
+		// Use FormattedBody is available, as it will contain quote information that we want to remove
+		if len(evt.Content.AsMessage().FormattedBody) != 0 {
+			msg := evt.Content.AsMessage()
+			msg.RemoveReplyFallback()
+			body = msg.FormattedBody
+		} else {
+			body = evt.Content.AsMessage().Body
+		}
+		//fmt.Printf("DBG <%[1]s> %[4]s (%[2]s/%[3]s)\n", evt.Sender, evt.Type.String(), evt.ID, body)
+		matches := shortcutMapRegex.FindAllStringSubmatch(body, -1)
+		if matches != nil {
+			var buffer bytes.Buffer
+			for _, match := range matches {
+				fmt.Println(match[1] + match[2] + " matched!")
+				fmt.Printf("<%[1]s> %[4]s (%[2]s/%[3]s)\n", evt.Sender, evt.Type.String(), evt.ID, body)
+				buffer.WriteString(shortcutMap[strings.ToLower(match[1])] + match[2] + " ")
+			}
+			return &event.MessageEventContent{MsgType: event.MsgText, Body: strings.TrimSuffix(buffer.String(), " ")}, nil
+		}
+	}
+	return nil, nil
+}
+
+func buildShortcutMapRegex() *regexp.Regexp {
+	keys := make([]string, len(shortcutMap))
+	i := 0
+	for k := range shortcutMap {
+		keys[i] = k
+		i++
+	}
+
+	regex := "(?i)(" + strings.Join(keys, "|") + ")(\\d+)"
+	return regexp.MustCompile(regex)
 }
