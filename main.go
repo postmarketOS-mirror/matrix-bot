@@ -103,7 +103,7 @@ func handleEvent(evt *event.Event) (*event.MessageEventContent, error) {
 				fmt.Printf("<%[1]s> %[4]s (%[2]s/%[3]s)\n", evt.Sender, evt.Type.String(), evt.ID, body)
 				buffer.WriteString(shortcutMap[strings.ToLower(match[1])] + match[2] + " ")
 			}
-			return &event.MessageEventContent{MsgType: event.MsgText, Body: strings.TrimSuffix(buffer.String(), " ")}, nil
+			return &event.MessageEventContent{MsgType: event.MsgNotice, Body: strings.TrimSuffix(buffer.String(), " ")}, nil
 		}
 	}
 	return nil, nil

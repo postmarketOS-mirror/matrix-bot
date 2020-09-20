@@ -59,7 +59,7 @@ func TestMessageKeyword(t *testing.T) {
 		content, err := handleEvent(&evt)
 		check(err)
 
-		assertEqual(t, content.MsgType, event.MsgText)
+		assertEqual(t, content.MsgType, event.MsgNotice)
 		assertEqual(t, content.Body, tt.message)
 	}
 }
