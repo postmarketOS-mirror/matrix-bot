@@ -84,29 +84,30 @@ func handleEvent(evt *event.Event) (*event.MessageEventContent, error) {
 	if err != nil {
 		return nil, err
 	}
-	if senderName != *username {
-		var body string
-		// Use FormattedBody is available, as it will contain quote information that we want to remove
-		if len(evt.Content.AsMessage().FormattedBody) != 0 {
-			msg := evt.Content.AsMessage()
-			msg.RemoveReplyFallback()
-			body = msg.FormattedBody
-		} else {
-			body = evt.Content.AsMessage().Body
-		}
-		//fmt.Printf("DBG <%[1]s> %[4]s (%[2]s/%[3]s)\n", evt.Sender, evt.Type.String(), evt.ID, body)
-		matches := shortcutMapRegex.FindAllStringSubmatch(body, -1)
-		if matches != nil {
-			var buffer bytes.Buffer
-			for _, match := range matches {
-				//fmt.Println(match[1] + match[2] + " matched!")
-				fmt.Printf("<%[1]s> %[4]s (%[2]s/%[3]s)\n", evt.Sender, evt.Type.String(), evt.ID, body)
-				buffer.WriteString(shortcutMap[strings.ToLower(match[1])] + match[2] + " ")
-			}
-			return &event.MessageEventContent{MsgType: event.MsgNotice, Body: strings.TrimSuffix(buffer.String(), " ")}, nil
-		}
+	if senderName == *username {
+		return nil, nil
 	}
-	return nil, nil
+	var body string
+	// Use FormattedBody is available, as it will contain quote information that we want to remove
+	if len(evt.Content.AsMessage().FormattedBody) != 0 {
+		msg := evt.Content.AsMessage()
+		msg.RemoveReplyFallback()
+		body = msg.FormattedBody
+	} else {
+		body = evt.Content.AsMessage().Body
+	}
+	//fmt.Printf("DBG <%[1]s> %[4]s (%[2]s/%[3]s)\n", evt.Sender, evt.Type.String(), evt.ID, body)
+	matches := shortcutMapRegex.FindAllStringSubmatch(body, -1)
+	if matches == nil {
+		return nil, nil
+	}
+	var buffer bytes.Buffer
+	for _, match := range matches {
+		//fmt.Println(match[1] + match[2] + " matched!")
+		fmt.Printf("<%[1]s> %[4]s (%[2]s/%[3]s)\n", evt.Sender, evt.Type.String(), evt.ID, body)
+		buffer.WriteString(shortcutMap[strings.ToLower(match[1])] + match[2] + " ")
+	}
+	return &event.MessageEventContent{MsgType: event.MsgNotice, Body: strings.TrimSuffix(buffer.String(), " ")}, nil
 }
 
 func buildShortcutMapRegex() *regexp.Regexp {
